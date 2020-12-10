@@ -1,0 +1,35 @@
+
+; ******** Source: /Users/jadamowski/@priv/c64-demo-sandbox/code/clear_screen.asm
+     1                          ; C64
+     2                          BASIC         = $0801
+     3                          
+     4                          ;==========================================================
+     5                          ; BASIC header
+     6                          ;==========================================================
+     7                          
+     8                          * = BASIC
+     9                          
+    10  0801 0b08                       !byte $0b, $08
+    11  0803 9a                         !byte $9A                     ; BASIC line number:  $029A = 666; $029B = 667
+    12  0804 029e                       !byte $02, $9E
+    13  0806 32                         !byte '0' + entry % 10000 / 1000
+    14  0807 30                         !byte '0' + entry %  1000 /  100
+    15  0808 36                         !byte '0' + entry %   100 /   10
+    16  0809 31                         !byte '0' + entry %    10
+    17  080a 000000                     !byte $00, $00, $00           ; end of basic
+    18                          
+    19                          entry
+    20  080d a900                       lda #$00      ; Put the value 0 in accumulator
+    21  080f 8d20d0                     sta $d020     ; Put value of acc in $d020
+    22  0812 8d21d0                     sta $d021     ; Put value of acc in $d021
+    23  0815 aa                         tax           ; Put value of acc in x reg
+    24  0816 a920                       lda #$20       ; Put the value $20 in acc
+    25                          clrloop
+    26  0818 9d0004                     sta $0400,x   ; Put value of acc in $0400 + value in x reg
+    27  081b 9d0005                     sta $0500,x
+    28  081e 9d0006                     sta $0600,x
+    29  0821 9d0007                     sta $0700,x
+    30  0824 ca                         dex            ; Decrement value in x reg
+    31  0825 d0f1                       bne clrloop    ; If not zero, branch to clrloop
+    32                          
+    33                                  ;rts

@@ -1,0 +1,20 @@
+
+al C:0801 .BASIC
+
+al C:083f .end
+al C:0842 .irq
+al C:0907 .indexcol
+al C:0853 .clear
+al C:0918 .skipfr
+al C:08fe .inccolor
+al C:0875 .looptext
+al C:08e3 .loopcolor
+al C:08e3 .fontcolor
+al C:084b .initscreen
+al C:080d .entry
+al C:0908 .colorn
+al C:08a7 .line2
+al C:08bb .line3
+al C:0893 .line1
+al C:08cf .line4
+al C:0873 .inittext

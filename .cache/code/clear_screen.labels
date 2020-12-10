@@ -1,0 +1,5 @@
+
+al C:0801 .BASIC
+
+al C:0818 .clrloop
+al C:080d .entry

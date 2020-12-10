@@ -1,0 +1,135 @@
+
+; ******** Source: /Users/jadamowski/@priv/c64-demo-sandbox/code/pattern.asm
+     1                          ; C64
+     2                          BASIC         = $0801
+     3                          
+     4                          ;==========================================================
+     5                          ; BASIC header
+     6                          ;==========================================================
+     7                          
+     8                          * = BASIC
+     9                          
+    10  0801 0b08                       !byte $0b, $08
+    11  0803 9a                         !byte $9A                     ; BASIC line number:  $029A = 666; $029B = 667     
+    12  0804 029e                       !byte $02, $9E
+    13  0806 32                         !byte '0' + entry % 10000 / 1000        
+    14  0807 30                         !byte '0' + entry %  1000 /  100        
+    15  0808 36                         !byte '0' + entry %   100 /   10        
+    16  0809 31                         !byte '0' + entry %    10             
+    17  080a 000000                     !byte $00, $00, $00           ; end of basic
+    18                          
+    19                          entry
+    20  080d 78                         sei
+    21  080e 204b08                     jsr initscreen
+    22  0811 207308                     jsr inittext
+    23  0814 a07f                       ldy #$7f
+    24  0816 8c0ddc                     sty $dc0d
+    25  0819 8c0ddd                     sty $dd0d
+    26  081c ad0ddc                     lda $dc0d
+    27  081f ad0ddd                     lda $dd0d
+    28  0822 a901                       lda #$01
+    29  0824 8d1ad0                     sta $d01a
+    30  0827 ad11d0                     lda $d011
+    31  082a 297f                       and #$7f
+    32  082c 8d11d0                     sta $d011
+    33  082f a942                       lda #<irq
+    34  0831 a208                       ldx #>irq
+    35  0833 8d1403                     sta $0314
+    36  0836 8e1503                     stx $0315
+    37  0839 a900                       lda #$00
+    38  083b 8d12d0                     sta $d012
+    39  083e 58                         cli
+    40                          end
+    41  083f 4c3f08                     jmp end
+    42                          ;---------------------------------------
+    43                          ;irq routine
+    44                          
+    45                          irq
+    46  0842 ce19d0                     dec $d019
+    47  0845 20e308                     jsr fontcolor
+    48  0848 4c81ea                     jmp $ea81
+    49                          ;---------------------------------------
+    50                          ;clear screen to color
+    51                          
+    52                          initscreen
+    53  084b a200                       ldx #$00
+    54  084d 8e21d0                     stx $d021
+    55  0850 8e20d0                     stx $d020
+    56                          
+    57                          clear
+    58  0853 a920                       lda #$20
+    59  0855 9d0004                     sta $0400,x
+    60  0858 9d0005                     sta $0500,x
+    61  085b 9d0006                     sta $0600,x
+    62  085e 9de806                     sta $06e8,x
+    63  0861 a901                       lda #$01
+    64  0863 9d00d8                     sta $d800,x
+    65  0866 9d00d9                     sta $d900,x
+    66  0869 9d00da                     sta $da00,x
+    67  086c 9de8da                     sta $dae8,x
+    68  086f e8                         inx
+    69  0870 d0e1                       bne clear
+    70  0872 60                         rts
+    71                          ;---------------------------------------
+    72                          ;load text to screen rooutine
+    73                          
+    74                          inittext
+    75  0873 a200                       ldx #$00
+    76                          looptext
+    77  0875 bd9308                     lda line1,x
+    78  0878 9d9005                     sta $0590,x
+    79  087b bdbb08                     lda line3,x
+    80  087e 9de005                     sta $05e0,x
+    81  0881 bda708                     lda line2,x
+    82  0884 9da405                     sta $05a4,x
+    83  0887 bdcf08                     lda line4,x
+    84  088a 9df405                     sta $05f4,x
+    85                          
+    86  088d e8                         inx
+    87  088e e014                       cpx #$14
+    88  0890 d0e3                       bne looptext
+    89  0892 60                         rts
+    90                          ;---------------------------------------
+    91                          ;text storage
+    92                          
+    93  0893 0914132008011605...line1   !scr "its have been almost"
+    94  08a7 2033302019050112...line2   !scr " 30 years since when"
+    95  08bb 200920070f14200d...line3   !scr " i got my commodore "
+    96  08cf 03363420030f0c0f...line4   !scr "c64 color washer :) "
+    97                          ;---------------------------------------
+    98                          ;color changer routine
+    99                          
+   100                          fontcolor
+   101                          loopcolor
+   102  08e3 ae0709                     ldx indexcol
+   103  08e6 ad0709                     lda indexcol
+   104  08e9 6d1809                     adc skipfr
+   105  08ec 290f                       and #$0f
+   106  08ee a8                         tay
+   107  08ef b90809                     lda colorn,y
+   108                              ;sta colorn
+   109  08f2 9d90d9                     sta $d990,x
+   110  08f5 9de0d9                     sta $d9e0,x
+   111  08f8 ee0709                     inc indexcol
+   112                              ;beq loopcolor
+   113                              ;inc colorn
+   114  08fb d001                       bne inccolor
+   115  08fd 60                         rts
+   116                          inccolor
+   117  08fe ee1809                     inc skipfr
+   118                              ;lda colorn
+   119  0901 6d1809                     adc skipfr
+   120                              ;sta colorn
+   121  0904 4ce308                     jmp loopcolor
+   122                          ;---------------------------------------
+   123                          ;variables location
+   124                          
+   125                          indexcol
+   126  0907 00                         !byte $00
+   127                          colorn
+   128  0908 01010f0f                   !byte $01,$01,$0f,$0f
+   129  090c 0c0c0b0b                   !byte $0c,$0c,$0b,$0b
+   130  0910 0b0b0c0c                   !byte $0b,$0b,$0c,$0c
+   131  0914 0f0f0101                   !byte $0f,$0f,$01,$01
+   132                          skipfr
+   133  0918 00                         !byte $00

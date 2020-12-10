@@ -1,0 +1,5 @@
+
+al C:0801 .BASIC
+
+al C:0812 .mainloop
+al C:080d .entry

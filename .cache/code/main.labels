@@ -1,0 +1,8 @@
+
+al C:0801 .BASIC
+
+al C:0860 .coord
+al C:0822 .mainloop
+al C:0847 .down
+al C:080d .entry
+al C:0861 .dir

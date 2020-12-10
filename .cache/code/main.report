@@ -1,0 +1,68 @@
+
+; ******** Source: /Users/jadamowski/@priv/c64-demo-sandbox/code/main.asm
+     1                          ; C64
+     2                          BASIC         = $0801
+     3                          
+     4                          ;==========================================================
+     5                          ; BASIC header
+     6                          ;==========================================================
+     7                          
+     8                          * = BASIC
+     9                          
+    10  0801 0b08                       !byte $0b, $08
+    11  0803 9a                         !byte $9A                     ; BASIC line number:  $029A = 666; $029B = 667
+    12  0804 029e                       !byte $02, $9E
+    13  0806 32                         !byte '0' + entry % 10000 / 1000
+    14  0807 30                         !byte '0' + entry %  1000 /  100
+    15  0808 36                         !byte '0' + entry %   100 /   10
+    16  0809 31                         !byte '0' + entry %    10
+    17  080a 000000                     !byte $00, $00, $00           ; end of basic
+    18                          
+    19                          entry
+    20  080d a901                       lda #$01
+    21  080f 8d15d0                     sta $d015    ; Turn sprite 0 on
+    22  0812 8d27d0                     sta $d027    ; Make it white
+    23  0815 a940                       lda #$40
+    24  0817 8d00d0                     sta $d000    ; set x coordinate to 40
+    25  081a 8d01d0                     sta $d001    ; set y coordinate to 40
+    26  081d a980                       lda #$80
+    27  081f 8df807                     sta $07f8    ; set pointer: sprite data at $2000
+    28                          
+    29                          mainloop
+    30  0822 ad12d0                     lda $d012
+    31  0825 c9ff                       cmp #$ff     ; raster beam at line $ff?
+    32  0827 d0f9                       bne mainloop ; no: go to mainloop
+    33                          
+    34  0829 ad6108                     lda dir      ; in which direction are we moving?
+    35  082c f019                       beq down     ; if 0, down
+    36                          
+    37                                              ; moving up
+    38  082e ae6008                     ldx coord    ; get coord
+    39  0831 ca                         dex          ; decrement it
+    40  0832 8e6008                     stx coord    ; store it
+    41  0835 8e00d0                     stx $d000    ; set sprite coords
+    42  0838 8e01d0                     stx $d001
+    43  083b e040                       cpx #$40     ; if it's not equal to $40...
+    44  083d d0e3                       bne mainloop ; just go back to the mainloop
+    45                          
+    46  083f a900                       lda #$00     ; otherwise, change direction
+    47  0841 8d6108                     sta dir
+    48  0844 4c2208                     jmp mainloop
+    49                          
+    50                          down
+    51  0847 ae6008                     ldx coord    ; this should be familiar
+    52  084a e8                         inx
+    53  084b 8e6008                     stx coord
+    54  084e 8e00d0                     stx $d000
+    55  0851 8e01d0                     stx $d001
+    56  0854 e0e0                       cpx #$e0
+    57  0856 d0ca                       bne mainloop
+    58                          
+    59  0858 a901                       lda #$01
+    60  085a 8d6108                     sta dir
+    61  085d 4c2208                     jmp mainloop
+    62                          
+    63                          coord
+    64  0860 40                         !byte $40   ; current x and y coordinate
+    65                          dir
+    66  0861 00                         !byte 0     ; direction: 0 = down-right, 1 = up-left

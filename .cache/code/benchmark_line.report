@@ -1,0 +1,39 @@
+
+; ******** Source: /Users/jadamowski/@priv/c64-demo-sandbox/code/benchmark_line.asm
+     1                          ; C64
+     2                          BASIC         = $0801
+     3                          
+     4                          ;==========================================================
+     5                          ; BASIC header
+     6                          ;==========================================================
+     7                          
+     8                          * = BASIC
+     9                          
+    10  0801 0b08                       !byte $0b, $08
+    11  0803 9a                         !byte $9A                     ; BASIC line number:  $029A = 666; $029B = 667
+    12  0804 029e                       !byte $02, $9E
+    13  0806 32                         !byte '0' + entry % 10000 / 1000
+    14  0807 30                         !byte '0' + entry %  1000 /  100
+    15  0808 36                         !byte '0' + entry %   100 /   10
+    16  0809 31                         !byte '0' + entry %    10
+    17  080a 000000                     !byte $00, $00, $00           ; end of basic
+    18                          
+    19                          entry
+    20  080d a900                       lda #$00
+    21  080f aa                         tax
+    22  0810 a8                         tay
+    23                                  ;jsr $1000 ; initialize music
+    24  0811 ea                         nop
+    25                          
+    26                          mainloop:
+    27  0812 ad12d0                     lda $d012    ; load $d012
+    28  0815 c980                       cmp #$80     ; is it equal to #$80?
+    29  0817 d0f9                       bne mainloop ; if not, keep checking
+    30                          
+    31  0819 ee20d0                     inc $d020    ; inc border colour
+    32  081c ee21d0                     inc $d021
+    33                                  ;jsr $1003    ; jump to music play routine
+    34  081f ea                         nop
+    35  0820 ce20d0                     dec $d020    ; dec border colour
+    36  0823 ce21d0                     dec $d021
+    37  0826 4c1208                     jmp mainloop ; keep looping
